@@ -63,8 +63,35 @@ TABLEAU recup_fichier(const char *str)
 		}
 		fclose(F);
 	}
-	affichage_tableau(t.data, t.taille);
+
+
+	return t;
 }
+
+void sauv_fichier(const char *str, TABLEAU tab)
+{
+	FILE* F;
+	TABLEAU t = { 0, NULL };
+
+	char car;
+	char car2;
+	int taille = 0;
+	int i = 0;
+
+	if ((F = fopen(str, "w")) == NULL)
+	{
+		printf("Erreur à l'ouverture");
+	}
+	else
+	{
+		for (int i = 0; i < tab.taille; i++)
+		{
+			fprintf(F, "%c", tab.data[i]);
+		}
+		fclose(F);
+	}
+}
+
 
 void affichage_tableau(char tab[], int n)
 {
