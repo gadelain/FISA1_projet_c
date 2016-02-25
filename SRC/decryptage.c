@@ -10,6 +10,7 @@ int decryptage_cesar(const char *str)
 
 	int choix = 0;
 	int chiffre_cesar = 0;
+	int i = 0;
 
 	cesar = recup_fichier(str);
 
@@ -22,7 +23,7 @@ int decryptage_cesar(const char *str)
 		printf("Entrer le chiffre de Cesar :\n");
 		scanf("%d", &chiffre_cesar);
 
-		for (int i = 0; i < cesar.taille; i++)
+		for (i = 0; i < cesar.taille; i++)
 		{
 			cesar.data[i] = cesar.data[i] - chiffre_cesar;
 		}
