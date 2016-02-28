@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "annexe.h"
+#include "menu.h"
 #include "cryptage.h"
 #include "decryptage.h"
 
@@ -12,8 +13,10 @@ int main(void)
 	//recup = recup_fichier("test.txt");
 
 	//free_tableau(&recup);
-	cryptage_cesar("fichier.txt");
-	decryptage_cesar("fichier_crypt.txt");
+	menu_image_crypt();
+	//decryptage_cesar("fichier_crypt.txt");
+
+	//decryptage_image_pgm("fichier_crypt_image.txt", "key.txt");
 
 	system("pause");
 	return 0;
