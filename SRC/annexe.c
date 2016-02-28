@@ -13,6 +13,16 @@ TABLEAU calloc_tableau(int n)
 	return t;
 }
 
+TABLEAU_int calloc_tableau_int(int n)
+{
+	TABLEAU_int t = { 0, NULL };
+
+	t.taille = n;
+	t.data = (int*)calloc(n, sizeof(int));
+
+	return t;
+}
+
 void free_tableau(TABLEAU *pt)
 {
 	if (pt->data != NULL)
@@ -68,13 +78,56 @@ TABLEAU recup_fichier(const char *str)
 	return t;
 }
 
+TABLEAU_int recup_fichier_int(const char *str)
+{
+	FILE* F;
+	TABLEAU_int t = { 0, NULL };
+
+	int car;
+	int car2;
+	int taille = 0;
+	int i = 0;
+
+	if ((F = fopen(str, "r")) == NULL)
+	{
+		printf("Erreur à l'ouverture");
+	}
+	else
+	{
+		while (fscanf(F, "%d;", &car) != EOF)
+		{
+			taille++;
+		}
+
+		t = calloc_tableau_int(taille);
+
+		fclose(F);
+	}
+
+	if ((F = fopen(str, "r")) == NULL)
+	{
+		printf("Erreur à l'ouverture");
+	}
+	else
+	{
+
+		while (fscanf(F, "%d;", &car2) != EOF)
+		{
+			t.data[i] = car2;
+			++i;
+		}
+		fclose(F);
+	}
+
+
+	return t;
+}
+
 void sauv_fichier(const char *str, TABLEAU tab)
 {
 	FILE* F;
 	TABLEAU t = { 0, NULL };
 
-	char car;
-	char car2;
 	int taille = 0;
 	int i = 0;
 
@@ -87,6 +140,28 @@ void sauv_fichier(const char *str, TABLEAU tab)
 		for (i = 0; i < tab.taille; i++)
 		{
 			fprintf(F, "%c", tab.data[i]);
+		}
+		fclose(F);
+	}
+}
+
+void sauv_fichier_int(const char *str, TABLEAU_int tab)
+{
+	FILE* F;
+	TABLEAU_int t = { 0, NULL };
+
+	int taille = 0;
+	int i = 0;
+
+	if ((F = fopen(str, "w")) == NULL)
+	{
+		printf("Erreur à l'ouverture");
+	}
+	else
+	{
+		for (i = 0; i < tab.taille; i++)
+		{
+			fprintf(F, "%d;", tab.data[i]);
 		}
 		fclose(F);
 	}
@@ -179,7 +254,7 @@ IMAGERGB recup_imageRGB(const char *in)
 						printf("Lecture image RGB type %s avec %d lignes et %d colonnes...\n",type,img.Nblig,img.Nbcol);
 					
 						/* taille connue, allocation dynamique possible */
-						img = allocationImageRGB(img.Nblig,img.Nbcol);
+						img = malloc_imageRGB(img.Nblig,img.Nbcol);
 
 						/* lecture pixel par pixel */
 						{
@@ -251,7 +326,7 @@ IMAGERGB recup_imageRGB(const char *in)
 						printf("Lecture image RGB type %s avec %d lignes et %d colonnes...\n",type,img.Nblig,img.Nbcol);
 					
 						/* taille connue, allocation dynamique possible */
-						img = allocationImageRGB(img.Nblig,img.Nbcol);
+						img = malloc_imageRGB(img.Nblig,img.Nbcol);
 
 						/* lecture d'un bloc */
 						fread(img.data,sizeof(RGB),img.Nbcol*img.Nblig,F);
@@ -366,7 +441,7 @@ IMAGE recup_image(const char *in)
 						printf("Lecture image NG type %s avec %d lignes et %d colonnes...\n",type,img.Nblig,img.Nbcol);
 					
 						/* taille connue, allocation dynamique possible */
-						img = allocationImage(img.Nblig,img.Nbcol);
+						img = malloc_image(img.Nblig,img.Nbcol);
 
 						/* lecture pixel par pixel */
 						{
@@ -434,7 +509,7 @@ IMAGE recup_image(const char *in)
 						printf("Lecture image NG type %s avec %d lignes et %d colonnes...\n",type,img.Nblig,img.Nbcol);
 					
 						/* taille connue, allocation dynamique possible */
-						img = allocationImage(img.Nblig,img.Nbcol);
+						img = malloc_image(img.Nblig,img.Nbcol);
 
 						/* lecture d'un bloc */
 						fread(img.data,sizeof(unsigned char),img.Nbcol*img.Nblig,F);
@@ -484,13 +559,18 @@ int detection_ppm_pgm(const char *in)
 {
 	int i = 0;
 	
-	for(i=0; in[i] != "."; i++)
+	//for(i=0; in[i] != "."; i++)
+
+	while (in[i] != '.')
+	{
+		i++;
+	}
 	
-	if(in[i+2] == "g")
+	if(in[i+2] == 'p')
 	{
 		return 1;
 	}
-	else if(in[i+2] == "p")
+	else if(in[i+2] == 'g')
 	{
 		return 2;
 	}

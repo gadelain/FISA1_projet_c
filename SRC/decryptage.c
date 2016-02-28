@@ -42,3 +42,14 @@ int decryptage_cesar(const char *str)
 		break;
 	}
 }
+
+int decryptage_image_pgm(const char *fichier_crypt, const char *key_crypt)
+{
+	TABLEAU texte = { 0, NULL };
+	TABLEAU_int key = { 0, NULL };
+
+	texte = recup_fichier(fichier_crypt);
+	key = recup_fichier_int(key_crypt);
+
+
+}
