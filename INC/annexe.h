@@ -36,6 +36,7 @@ TABLEAU calloc_tableau(int n);
 TABLEAU_int calloc_tableau_int(int n);
 void free_tableau(TABLEAU *pt);
 void affichage_tableau(char tab[], int n);
+void affichage_tableau_int(char tab[], int n);
 
 TABLEAU recup_fichier(const char *str);
 TABLEAU_int recup_fichier_int(const char *str);
