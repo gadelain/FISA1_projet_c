@@ -17,8 +17,8 @@ TABLEAU_int calloc_tableau_int(int n)
 {
 	TABLEAU_int t = { 0, NULL };
 
-	t.taille = n;
-	t.data = (int*)calloc(n, sizeof(int));
+	t.taille = 2*n;
+	t.data = (int*)calloc((2*n), sizeof(int));
 
 	return t;
 }
@@ -119,7 +119,6 @@ TABLEAU_int recup_fichier_int(const char *str)
 		fclose(F);
 	}
 
-
 	return t;
 }
 
@@ -176,6 +175,22 @@ void affichage_tableau(char tab[], int n)
 	for (i = 0, sautLigne = 1; i<n; i++, sautLigne++)
 	{
 		printf("%c", tab[i]);
+		if (sautLigne % 10 != 0)
+			printf("\t");
+		else
+			printf("\n");
+	}
+	printf("\n-----\n");
+}
+
+void affichage_tableau_int(char tab[], int n)
+{
+	int i, sautLigne;
+
+	printf("\n-----\n");
+	for (i = 0, sautLigne = 1; i<n; i++, sautLigne++)
+	{
+		printf("%d", tab[i]);
 		if (sautLigne % 10 != 0)
 			printf("\t");
 		else
