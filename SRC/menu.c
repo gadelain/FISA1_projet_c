@@ -4,20 +4,24 @@
 #include "menu.h"
 #include "annexe.h"
 #include "cryptage.h"
+#include "decryptage.h"
 
-char menu_cesar_crypt(void)
+
+int menu_cesar_crypt(void)
 {
-	char choix = '0';
+	int choix = 0;
 
-	while (choix != '1' || choix != '2' || choix != '3')
+	system("cls");
+
+	while (choix < 1 || choix > 3)
 	{
 		printf("Voulez vous entrer le chiffre de Cesar ?\n");
 		printf("1 - Oui\n");
 		printf("2 - Non, je laisse le programme choisir\n");
 		printf("3 - Retour au menu principal\n\n");
-		scanf("%c", &choix);
+		scanf("%d", &choix);
 
-		if (choix != '1' || choix != '2' || choix != '3')
+		if (choix < 1 || choix > 3)
 		{
 			system("cls");
 			printf("Erreur : vous n'avez pas entre un choix correct\n");
@@ -27,23 +31,48 @@ char menu_cesar_crypt(void)
 	return choix;
 }
 
-char menu_image_crypt(const char *str)
+int menu_clef(void)
 {
-	char choix = '0';
+	int choix = 0;
+
+	system("cls");
+
+	while (choix < 1 || choix > 2)
+	{
+		printf("Veulliez entrer un choix :\n");
+		printf("1- Entrez votre clef\n");
+		printf("2- Retour au menu principal\n\n");
+		scanf("%d", &choix);
+
+		if (choix < 1 || choix > 2)
+		{
+			system("cls");
+			printf("Erreur : vous n'avez pas entre un choix correct\n");
+		}
+	}
+
+	return choix;
+}
+
+int menu_image_crypt(const char *str)
+{
+	int choix = 0;
 	char nom_image[255]; //Limite pour un nom de fichier depuis Win95
 	char* nom_image_default = "default.ppm";
-	char detection = '3'; //detection = 3 car 3 est le cas default
+	int detection = 3; //detection = 3 car 3 est le cas default
 	int checkpoint = -1;
+	int fichier_correct = -1;
 
-	while (choix != '1' || choix != '2' || choix != '3')
+	while (choix < 1 || choix > 3)
 	{
+		system("cls");
 		printf("Voulez vous choisir une image ?\n");
 		printf("1 - Oui\n");
 		printf("2 - Non, je laisse le programme choisir\n");
 		printf("3 - Retour au menu principal\n\n");
-		scanf("%c", &choix);
+		scanf("%d", &choix);
 
-		if (choix != '1' || choix != '2' || choix != '3')
+		if (choix < 1 || choix > 3)
 		{
 			system("cls");
 			printf("Erreur : vous n'avez pas entre un choix correct\n");
@@ -52,16 +81,22 @@ char menu_image_crypt(const char *str)
 
 	switch (choix)
 	{
-	case '1':
+	case 1:
 		system("cls");
-		printf("Entrer le nom de votre image au format nom_image.format :\nATTENTION : Les espaces et les carateres speciaux ne sont pas autorises dans le nom de l'image.\nSeules les images .pgm et .ppm sont autorisees.\n");
-		scanf("%s", nom_image);
+
+		while (fichier_correct != 0)
+		{
+			printf("Entrer le nom de votre image au format nom_image.format :\nATTENTION : Les espaces et les carateres speciaux ne sont pas autorises dans le nom de l'image.\nSeules les images .pgm et .ppm sont autorisees.\n");
+			scanf("%s", nom_image);
+
+			fichier_correct = detection_fichier(nom_image);
+		}
 
 		detection = detection_ppm_pgm(nom_image);
 
 		switch (detection)
 		{
-		case '1':
+		case 1:
 			checkpoint = cryptage_image_ppm(nom_image, str);
 			if (checkpoint != 0)
 			{
@@ -74,7 +109,7 @@ char menu_image_crypt(const char *str)
 				return 0;
 			}
 			break;
-		case '2':
+		case 2:
 			checkpoint = cryptage_image_pgm(nom_image, str);
 			if (checkpoint != 0)
 			{
@@ -93,7 +128,7 @@ char menu_image_crypt(const char *str)
 			break;
 		}
 		break;
-	case '2':
+	case 2:
 		checkpoint = cryptage_image_ppm(nom_image_default, str);
 		if (checkpoint != 0)
 		{
@@ -106,7 +141,7 @@ char menu_image_crypt(const char *str)
 			return 0;
 		}
 		break;
-	case '3':
+	case 3:
 		return 0;
 		break;
 	default:
@@ -116,24 +151,27 @@ char menu_image_crypt(const char *str)
 	}
 }
 
-char menu_image_decrypt(const char *str)
+int menu_image_decrypt(const char *str)
 {
-	char choix = '0';
+	
+
+	int choix = 0;
 	char nom_image[255]; //Limite pour un nom de fichier depuis Win95
 	char nom_cle[255]; //Limite pour un nom de fichier depuis Win95
 	char* nom_image_default = "default.ppm";
-	char detection = '3'; //detection = 3 car 3 est le cas default
+	int detection = 3; //detection = 3 car 3 est le cas default
 	int checkpoint = -1;
+	int fichier_correct = -1;
 
-	while (choix != '1' || choix != '2' || choix != '3')
+	while (choix < 1 || choix > 3)
 	{
 		printf("Avez vous choisi une image lors du cryptage ?\n");
 		printf("1 - Oui\n");
 		printf("2 - Non, j'ai laisse le programme choisir\n");
 		printf("3 - Retour au menu principal\n\n");
-		scanf("%c", &choix);
+		scanf("%d", &choix);
 
-		if (choix != '1' || choix != '2' || choix != '3')
+		if (choix < 1 || choix > 3)
 		{
 			system("cls");
 			printf("Erreur : vous n'avez pas entre un choix correct\n");
@@ -142,7 +180,7 @@ char menu_image_decrypt(const char *str)
 
 	switch (choix)
 	{
-	case '1':
+	case 1:
 		system("cls");
 		printf("Entrer le nom de votre image au format nom_image.format :\nATTENTION : Les espaces et les carateres speciaux ne sont pas autorises dans le nom de l'image.\nSeules les images .pgm et .ppm sont autorisees.\n");
 		scanf("%s", nom_image);
@@ -154,7 +192,7 @@ char menu_image_decrypt(const char *str)
 
 		switch (detection)
 		{
-		case '1':
+		case 1:
 			checkpoint = decryptage_image_ppm(nom_image, str, nom_cle);
 			if (checkpoint != 0)
 			{
@@ -167,7 +205,7 @@ char menu_image_decrypt(const char *str)
 				return 0;
 			}
 			break;
-		case '2':
+		case 2:
 			checkpoint = decryptage_image_pgm(nom_image, str, nom_cle);
 			if (checkpoint != 0)
 			{
@@ -186,7 +224,10 @@ char menu_image_decrypt(const char *str)
 			break;
 		}
 		break;
-	case '2':
+	case 2:
+		system("cls");
+		printf("Entrer le nom de votre fichier cle au format nom_fichier.txt :\n");
+		scanf("%s", nom_cle);
 		checkpoint = decryptage_image_ppm(nom_image_default, str, nom_cle);
 		if (checkpoint != 0)
 		{
@@ -199,7 +240,7 @@ char menu_image_decrypt(const char *str)
 			return 0;
 		}
 		break;
-	case '3':
+	case 3:
 		return 0;
 		break;
 	default:
@@ -209,11 +250,11 @@ char menu_image_decrypt(const char *str)
 	}
 }
 
-char menu_annexe(void)
+int menu_annexe(void)
 {
-	char choix = '0';
+	int choix = 0;
 
-	while (choix != '1' || choix != '2' || choix != '3' || choix != '4' || choix != '5')
+	while (choix < 1 || choix > 5)
 	{
 		printf("Menu annexe :\n");
 		printf("1 - Ecrire du texte\n");
@@ -221,9 +262,9 @@ char menu_annexe(void)
 		printf("3 - A propos de...\n");
 		printf("4 - Acceder au Github\n");
 		printf("5 - Retour au menu principal\n\n");
-		scanf("%c", &choix);
+		scanf("%d", &choix);
 
-		if (choix != '1' || choix != '2' || choix != '3' || choix != '4' || choix != '5')
+		if (choix < 1 || choix > 5)
 		{
 			system("cls");
 			printf("Erreur : vous n'avez pas entre un choix correct\n");
@@ -232,32 +273,235 @@ char menu_annexe(void)
 
 	switch (choix)
 	{
-	case '1':
+	case 1:
 		printf("IMPORTANT : penser a enregistrer votre travail avant de fermer Notepad\n");
 		system("notepad.exe mon_fichier");
 		system("pause");
 
 		return 0;
 		break;
-	case '2':
+	case 2:
 		system("notepad.exe FAQ");
 
 		return 0;
 		break;
-	case '3':
+	case 3:
 		system("notepad.exe README");
 
 		return 0;
 		break;
-	case '4':
+	case 4:
 		system("start iexplore.exe https://github.com/gadelain/FISA1_projet_c");
 
 		return 0;
 		break;
-	case '5':
+	case 5:
 		system("notepad.exe README");
 		system("pause");
 
+		return 0;
+		break;
+	default:
+		printf("Erreur default / break");
+		return -1;
+		break;
+	}
+
+	return choix;
+}
+
+int menu_cryptage(void)
+{
+	int choix = 0;
+	int retour = -1;
+	int fichier_correct = -1;
+	char nom_fichier[255];
+
+	while (choix < 1 || choix > 4)
+	{
+		printf("Menu Cryptage :\n");
+		printf("1 - Cryptage Cesar\n");
+		printf("2 - Cryptage Clef\n");
+		printf("3 - Cryptage Image\n");
+		printf("4 - Retour au menu principal\n\n");
+		scanf("%d", &choix);
+
+		if (choix < 1 || choix > 4)
+		{
+			system("cls");
+			printf("Erreur : vous n'avez pas entre un choix correct\n");
+		}
+	}
+
+	switch (choix)
+	{
+	case 1:
+		system("cls");
+
+		while (fichier_correct != 0)
+		{
+			printf("Entrer le nom du fichier a crypter :");
+			scanf("%s", nom_fichier);
+			system("cls");
+
+			fichier_correct = detection_fichier(nom_fichier);
+		}
+
+		
+		retour = cryptage_cesar(nom_fichier);
+
+		if (retour != 0)
+		{
+			printf("Erreur dans le cryptage");
+		}
+
+		return 0;
+		break;
+	case 2:
+		system("cls");
+
+		while (fichier_correct != 0)
+		{
+			printf("Entrer le nom du fichier a crypter :");
+			scanf("%s", nom_fichier);
+			system("cls");
+
+			fichier_correct = detection_fichier(nom_fichier);
+		}
+
+		retour = cryptage_clef(nom_fichier);
+
+		if (retour != 0)
+		{
+			printf("Erreur dans le cryptage");
+		}
+
+		return 0;
+		break;
+	case 3:
+		system("cls");
+
+		while (fichier_correct != 0)
+		{
+			printf("Entrer le nom du fichier a crypter :");
+			scanf("%s", nom_fichier);
+			system("cls");
+
+			fichier_correct = detection_fichier(nom_fichier);
+		}
+
+		retour = menu_image_crypt(nom_fichier);
+
+		if (retour != 0)
+		{
+			printf("Erreur dans le cryptage");
+		}
+
+		return 0;
+		break;
+	case 4:
+		return 0;
+		break;
+	default:
+		printf("Erreur default / break");
+		return -1;
+		break;
+	}
+
+	return choix;
+}
+
+int menu_decryptage(void)
+{
+	int choix = 0;
+	int retour = -1;
+	int fichier_correct = -1;
+	char nom_fichier[255];
+
+	while (choix < 1 || choix > 4)
+	{
+		printf("Menu Decryptage :\n");
+		printf("1 - Decryptage Cesar\n");
+		printf("2 - Decryptage Clef\n");
+		printf("3 - Decryptage Image\n");
+		printf("4 - Retour au menu principal\n\n");
+		scanf("%d", &choix);
+
+		if (choix < 1 || choix > 4)
+		{
+			system("cls");
+			printf("Erreur : vous n'avez pas entre un choix correct\n");
+		}
+	}
+
+	switch (choix)
+	{
+	case 1:
+		system("cls");
+
+		while (fichier_correct != 0)
+		{
+			printf("Entrer le nom du fichier a decrypter :");
+			scanf("%s", nom_fichier);
+			system("cls");
+
+			fichier_correct = detection_fichier(nom_fichier);
+		}
+
+		system("cls");
+
+		retour = decryptage_cesar(nom_fichier);
+
+		if (retour != 0)
+		{
+			printf("Erreur dans le cryptage");
+		}
+
+		return 0;
+		break;
+	case 2:
+		system("cls");
+
+		while (fichier_correct != 0)
+		{
+			printf("Entrer le nom du fichier a crypter :");
+			scanf("%s", nom_fichier);
+			system("cls");
+
+			fichier_correct = detection_fichier(nom_fichier);
+		}
+
+		decryptage_clef(nom_fichier);
+
+		if (retour != 0)
+		{
+			printf("Erreur dans le cryptage");
+		}
+
+		return 0;
+		break;
+	case 3:
+		system("cls");
+
+		while (fichier_correct != 0)
+		{
+			printf("Entrer le nom du fichier a crypter :");
+			scanf("%s", nom_fichier);
+			system("cls");
+
+			fichier_correct = detection_fichier(nom_fichier);
+		}
+
+		retour = menu_image_decrypt(nom_fichier);
+
+		if (retour != 0)
+		{
+			printf("Erreur dans le cryptage");
+		}
+
+		return 0;
+		break;
+	case 4:
 		return 0;
 		break;
 	default:

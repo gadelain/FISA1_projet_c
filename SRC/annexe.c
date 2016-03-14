@@ -1,172 +1,253 @@
-#include <stdio.h>
-#include <stdlib.h>
+/*		===== Informations sur le fichier =====
+Fichier : annexe.c (Source)
+Repertoire : .../SRC/
+Description : Fichier contenant les déclarations des fonctions annexes au programme. Ces données sont
+indispensables au fonctionnement du programme. Elles permmettent :
+	- Les manipulations de fichiers texte et images : récupération, sauvegarde, affichage, libération
+	- La détection du type d'image entré par l'utilisateur (pgm ou ppm)
+	- Le controle de l'exactitude des noms de fichiers
+*/
 
-#include "annexe.h"
+/*Entêtes préprocesseur*/
+#include <stdio.h> // Gestion des I/O
+#include <stdlib.h> // Gestion des commandes system pour Windows
 
-TABLEAU calloc_tableau(int n)
+#include "annexe.h" // Fichier header pour les annexes (voir le fichier pour description détaillées)
+
+/*Définition des fonctions*/
+
+/*FONCTION : calloc_tableau
+	Fichier : (déclaration) annexe.h, (définition) annexe.c
+	Prototype : TABLEAU calloc_tableau(int n)
+	Paramètre(s) d'entrée : 
+		- unsigned int n (taille du tableau)
+	Paramètre de retour : 
+		- TABLEAU (tableau alloué dynamiquement)
+	Description : Permet l'allocation dynamique à 0 de tableaux destinés au texte*/
+TABLEAU calloc_tableau(unsigned int n)
 {
 	TABLEAU t = { 0, NULL }; 
 
-	t.taille = n;
-	t.data = (char*)calloc(n, sizeof(char));
+	t.taille = n; // On reseigne le champ taille
+	t.data = (char*)calloc(n, sizeof(char)); // On alloue dynamiquement le TABLEAU
 
 	return t;
 }
 
-TABLEAU_int calloc_tableau_int(int n)
+/*FONCTION : calloc_tableau_int
+	Fichier : (déclaration) annexe.h, (définition) annexe.c
+	Prototype : TABLEAU_int calloc_tableau_int(int n)
+	Paramètre(s) d'entrée : 
+		- unsigned int n (taille du tableau)
+	Paramètre de retour : 
+		- TABLEAU_int (tableau alloué dynamiquement)
+	Description : Permet l'allocation dynamique à 0 de tableaux destinés à des entiers*/
+TABLEAU_int calloc_tableau_int(unsigned int n)
 {
-	TABLEAU_int t = { 0, NULL };
+	TABLEAU_int t = { 0, NULL }; // TABLEAU_int de retour alloué dynamiquement
 
-	t.taille = 2*n;
-	t.data = (int*)calloc((2*n), sizeof(int));
+	t.taille = 2*n; // Dans notre cas le champ data contiendra l'abscisse et l'ordonnée de chacun des pixels 
+					// utilisés pour le cryptage. On dois donc avoir une taille deux fois plus grande que
+					// le TABLEAU contenant notre texte. La taille de ce TABLEAU est passé en paramètre.
+	t.data = (int*)calloc((2*n), sizeof(int)); // On alloue dynamiquement le TABLEAU_int
 
 	return t;
 }
 
+/*FONCTION : free_tableau
+	Fichier : (déclaration) annexe.h, (définition) annexe.c
+	Prototype : void free_tableau(TABLEAU *pt)
+	Paramètre(s) d'entrée : 
+		- TABLEAU *pt (adresse de la variable de type TABLEAU)
+	Paramètre de retour : void
+	Description : Libération de l'espace mémoire pour le type TABLEAU*/
 void free_tableau(TABLEAU *pt)
 {
 	if (pt->data != NULL)
 	{
-		free(pt->data);
+		free(pt->data); // On libère le champ data
 	}
 	pt->data = NULL;
-	pt->taille = 0;
+	pt->taille = 0; // On met le champ taille à 0
 }
 
+/*FONCTION : recup_fichier
+	Fichier : (déclaration) annexe.h, (définition) annexe.c
+	Prototype : TABLEAU recup_fichier(const char *str)
+	Paramètre(s) d'entrée : 
+		- const char *str (chaine de caractères, nom du fichier à récupérer)
+	Paramètre de retour : 
+		- TABLEAU (dimensionné et rempli avec les données issues du fichier)
+	Description : Permet de récupérer les données (caractères) contenues dans un fichier texte et de les
+	renseigner dans un TABLEAU*/
 TABLEAU recup_fichier(const char *str)
 {
 	FILE* F;
-	TABLEAU t = { 0, NULL };
+	TABLEAU t = { 0, NULL }; // TABLEAU pour la récupération du fichier
 
 	char car;
 	char car2;
-	int taille = 0;
-	int i = 0;
+	unsigned int taille = 0;
+	unsigned int i = 0;
 
-	if ((F = fopen(str, "r")) == NULL) 
+	if ((F = fopen(str, "r")) == NULL)  // On teste le flux
 	{
-		printf("Erreur à l'ouverture");
+		printf("Erreur à l'ouverture"); // Cas erreur
 	}
 	else
 	{
-		while (fscanf(F, "%c", &car) != EOF)
+		while (fscanf(F, "%c", &car) != EOF) // EOF : End Of File, on parcours le fichier jusqu'au caractère non imprimable de fin
 		{
-			taille++;
+			taille++; // On determine le nombre exact de caractères
 		}
 
+		// On alloue dynamiquement notre variable t en fonction de la taille trouvée précédement
 		t = calloc_tableau(taille);
 
-		fclose(F);
+		fclose(F); // On ferme le flux
 	}
 
-	if ((F = fopen(str, "r")) == NULL)
+	if ((F = fopen(str, "r")) == NULL) // On teste le flux
 	{
-		printf("Erreur à l'ouverture");
+		printf("Erreur à l'ouverture"); // Cas erreur
 	}
 	else
 	{
 
-		while (fscanf(F, "%c", &car2) != EOF)
+		while (fscanf(F, "%c", &car2) != EOF) // On parcours le fichier jusqu'au caractère non imprimable de fin
 		{
-			t.data[i] = car2;
+			t.data[i] = car2; // On rempli le tableau t.data avec les données issu du fichier
 			++i;
 		}
-		fclose(F);
+		fclose(F); // On ferme le flux
 	}
 
 
 	return t;
 }
 
+/*FONCTION : recup_fichier_int
+	Fichier : (déclaration) annexe.h, (définition) annexe.c
+	Prototype : TABLEAU_int recup_fichier_int(const char *str)
+	Paramètre(s) d'entrée :
+		- const char *str (chaine de caractères, nom du fichier à récupérer)
+	Paramètre de retour : 
+		- TABLEAU_int (dimensionné et rempli avec les données issues du fichier)
+	Description : Permet de récupérer les données (entiers) contenues dans un fichier texte et de les
+	renseigner dans un TABLEAU_int*/
 TABLEAU_int recup_fichier_int(const char *str)
 {
 	FILE* F;
-	TABLEAU_int t = { 0, NULL };
+	TABLEAU_int t = { 0, NULL }; // TABLEAU_int pour la récupération du fichier
 
 	int car;
 	int car2;
-	int taille = 0;
-	int i = 0;
+	unsigned int taille = 0;
+	unsigned int i = 0;
 
-	if ((F = fopen(str, "r")) == NULL)
+	if ((F = fopen(str, "r")) == NULL) // On teste le flux
 	{
-		printf("Erreur à l'ouverture");
+		printf("Erreur à l'ouverture"); // Cas erreur
 	}
 	else
 	{
-		while (fscanf(F, "%d;", &car) != EOF)
+		while (fscanf(F, "%d;", &car) != EOF) // EOF : End Of File, on parcours le fichier jusqu'au caractère non imprimable de fin
 		{
-			taille++;
+			taille++; // On determine le nombre exact de caractères
 		}
 
-		t = calloc_tableau_int(taille);
+		// On alloue dynamiquement notre variable t en fonction de la taille trouvée précédement
+		t = calloc_tableau_int(taille); 
 
-		fclose(F);
+		fclose(F); // On ferme le flux
 	}
 
-	if ((F = fopen(str, "r")) == NULL)
+	if ((F = fopen(str, "r")) == NULL) // On teste le flux
 	{
-		printf("Erreur à l'ouverture");
+		printf("Erreur à l'ouverture"); // Cas erreur
 	}
 	else
 	{
 
-		while (fscanf(F, "%d;", &car2) != EOF)
+		while (fscanf(F, "%d;", &car2) != EOF) // On parcours le fichier jusqu'au caractère non imprimable de fin
 		{
-			t.data[i] = car2;
+			t.data[i] = car2; // On rempli le tableau t.data avec les données issu du fichier
 			++i;
 		}
-		fclose(F);
+		fclose(F); // On ferme le flux
 	}
 
 	return t;
 }
 
+/*FONCTION : sauv_fichier
+	Fichier : (déclaration) annexe.h, (définition) annexe.c
+	Prototype : void sauv_fichier(const char *str, TABLEAU tab)
+	Paramètre(s) d'entrée :
+		- const char *str (chaine de caractères, nom du fichier où l'on va sauvegarder le TABLEAU)
+		- TABLEAU tab (données, caratères à enregistrer)
+	Paramètre de retour : void
+	Description : Permet d'enregistrer les données (caractères) contenues dans un TABLEAU dans un fichier
+	texte au format .txt*/
 void sauv_fichier(const char *str, TABLEAU tab)
 {
 	FILE* F;
-	TABLEAU t = { 0, NULL };
 
-	int taille = 0;
-	int i = 0;
+	unsigned int taille = 0;
+	unsigned int i = 0;
 
-	if ((F = fopen(str, "w")) == NULL)
+	if ((F = fopen(str, "w")) == NULL) // On teste le flux
 	{
-		printf("Erreur à l'ouverture");
+		printf("Erreur à l'ouverture"); // Cas erreur
 	}
 	else
 	{
 		for (i = 0; i < tab.taille; i++)
 		{
-			fprintf(F, "%c", tab.data[i]);
+			fprintf(F, "%c", tab.data[i]); // On ecrit chaque caractère dans le fichier
 		}
-		fclose(F);
+		fclose(F); // On ferme le flux
 	}
 }
 
+/*FONCTION : sauv_fichier_int
+	Fichier : (déclaration) annexe.h, (définition) annexe.c
+	Prototype : void sauv_fichier_int(const char *str, TABLEAU_int tab)
+	Paramètre(s) d'entrée :
+		- const char *str (chaine de caractères, nom du fichier où l'on va sauvegarder le TABLEAU_int)
+		- TABLEAU_int tab (données, entiers à enregistrer)
+	Paramètre de retour : void
+	Description : Permet d'enregistrer les données (entiers) contenues dans un TABLEAU_int dans un fichier
+	texte au format .txt*/
 void sauv_fichier_int(const char *str, TABLEAU_int tab)
 {
 	FILE* F;
-	TABLEAU_int t = { 0, NULL };
 
-	int taille = 0;
-	int i = 0;
+	unsigned int taille = 0;
+	unsigned int i = 0;
 
-	if ((F = fopen(str, "w")) == NULL)
+	if ((F = fopen(str, "w")) == NULL) // On teste le flux
 	{
-		printf("Erreur à l'ouverture");
+		printf("Erreur à l'ouverture"); // Cas erreur
 	}
 	else
 	{
 		for (i = 0; i < tab.taille; i++)
 		{
-			fprintf(F, "%d;", tab.data[i]);
+			fprintf(F, "%d;", tab.data[i]); // On écrit chaque entier séparé par un point virgule
 		}
-		fclose(F);
+		fclose(F); // On ferme le flux
 	}
 }
 
-
+/*FONCTION : affichage_tableau
+	Fichier : (déclaration) annexe.h, (définition) annexe.c
+	Prototype : void affichage_tableau(char tab[], int n)
+	Paramètre(s) d'entrée : 
+		- char tab[] (données, contenues dans un tableau à une dimension)
+		- unsigned int n (taille du tableau)
+	Paramètre de retour : void
+	Description : Affichage d'un tableau de caractères à des fins d'information ou de controle*/
 void affichage_tableau(char tab[], int n)
 {
 	int i, sautLigne;
@@ -175,15 +256,23 @@ void affichage_tableau(char tab[], int n)
 	for (i = 0, sautLigne = 1; i<n; i++, sautLigne++)
 	{
 		printf("%c", tab[i]);
-		if (sautLigne % 10 != 0)
-			printf("\t");
+		if (sautLigne % 100 != 0)
+			printf(""); // Evite les espaces entres les lettres
 		else
 			printf("\n");
 	}
 	printf("\n-----\n");
 }
 
-void affichage_tableau_int(char tab[], int n)
+/*FONCTION : affichage_tableau_int
+	Fichier : (déclaration) annexe.h, (définition) annexe.c
+	Prototype : void affichage_tableau_int(int tab[], int n)
+	Paramètre(s) d'entrée : 
+		- int tab[] (données, contenues dans un tableau à une dimension)
+		- unsigned int n (taille du tableau)
+	Paramètre de retour : void
+	Description : Affichage d'un tableau d'entiers à des fins d'information ou de controle*/
+void affichage_tableau_int(int tab[], int n)
 {
 	int i, sautLigne;
 
@@ -192,13 +281,22 @@ void affichage_tableau_int(char tab[], int n)
 	{
 		printf("%d", tab[i]);
 		if (sautLigne % 10 != 0)
-			printf("\t");
+			printf("\t"); // Tabulation
 		else
 			printf("\n");
 	}
 	printf("\n-----\n");
 }
 
+/*FONCTION : recup_imageRGB
+	Fichier : (déclaration) annexe.h, (définition) annexe.c
+	Prototype : IMAGERGB recup_imageRGB(const char *in)
+	Paramètre(s) d'entrée :
+		- const char *in (chaine de caractères, nom du fichier à récupérer)
+	Paramètre de retour : 
+		- IMAGERGB (dimensionné et rempli avec les données issues du fichier)
+	Description : Permet de récupérer les données contenues dans un fichier image de type ppm et de les
+	renseigner dans un IMAGERGB*/
 IMAGERGB recup_imageRGB(const char *in)
 {
 	FILE *F = NULL;
@@ -353,28 +451,46 @@ IMAGERGB recup_imageRGB(const char *in)
 	return img;
 }
 
+/*FONCTION : free_imageRGB
+	Fichier : (déclaration) annexe.h, (définition) annexe.c
+	Prototype : void free_imageRGB(IMAGERGB *m)
+	Paramètre(s) d'entrée :
+		- IMAGERGB *m (adresse de la variable de type IMAGERGB)
+	Paramètre de retour : void
+	Description : Libération de l'espace mémoire pour le type IMAGERGB*/
 void free_imageRGB(IMAGERGB *m)
 {
 	if (m->data != NULL) {
-		free(m->data);
+		free(m->data); // On libère le champ data
 		m->data = NULL;
 	}
 	if (m->pixel != NULL) {
-		free(m->pixel);
+		free(m->pixel); // On libère le champ pixel
 		m->pixel = NULL;
 	}
 }
 
-IMAGERGB malloc_imageRGB(int Nblig, int Nbcol)
+/*FONCTION : malloc_imageRGB
+	Fichier : (déclaration) annexe.h, (définition) annexe.c
+	Prototype : IMAGERGB malloc_imageRGB(int Nblig, int Nbcol)
+	Paramètre(s) d'entrée :
+		- unsigend int Nblig (nombre de lignes de l'image)
+		- unsigned int Nbcol (nombre de colonnes de l'image)
+	Paramètre de retour :
+		- IMAGERGB (image couleur allouée dynamiquement)
+	Description : Permet l'allocation dynamique (malloc) de matrices destinés a des images couleurs*/
+IMAGERGB malloc_imageRGB(unsigned int Nblig, unsigned int Nbcol)
 {
 	IMAGERGB mat = {0,0,NULL,NULL};
 	int i;
 
-	mat.Nblig = Nblig;
-	mat.Nbcol = Nbcol;
+	mat.Nblig = Nblig; // On renseigne le champ nombre de lignes
+	mat.Nbcol = Nbcol; // On renseigne le champ nombre de colonnes
+	// On alloue dynamiquement le champ data en fonction du nombre de lignes et du nombres de colonnes
 	mat.data = (RGB*)malloc(Nblig*Nbcol*sizeof(RGB));
 	if (mat.data == NULL)
 		return(mat);
+	// On alloue dynamiquement le champ pixel en fonction du nombre de lignes et du nombres de colonnes
 	mat.pixel = (RGB**)malloc(Nblig*sizeof(RGB*));
 	if (mat.pixel == NULL) {
 		free(mat.data);
@@ -387,6 +503,15 @@ IMAGERGB malloc_imageRGB(int Nblig, int Nbcol)
 	return(mat);
 }
 
+/*FONCTION : recup_image
+	Fichier : (déclaration) annexe.h, (définition) annexe.c
+	Prototype : IMAGE recup_image(const char *in)
+	Paramètre(s) d'entrée :
+		- const char *in (chaine de caractères, nom du fichier à récupérer)
+	Paramètre de retour : 
+		- IMAGE (dimensionné et rempli avec les données issues du fichier)
+	Description : Permet de récupérer les données contenues dans un fichier image de type pgm et de les
+	renseigner dans un IMAGE*/
 IMAGE recup_image(const char *in)
 {
 	FILE *F = NULL;
@@ -536,28 +661,46 @@ IMAGE recup_image(const char *in)
 	return img;
 }
 
+/*FONCTION : free_image
+	Fichier : (déclaration) annexe.h, (définition) annexe.c
+	Prototype : void free_image(IMAGE *m)
+	Paramètre(s) d'entrée :
+		- IMAGE *m (adresse de la variable de type IMAGE)
+	Paramètre de retour : void
+	Description : Libération de l'espace mémoire pour le type IMAGE*/
 void free_image(IMAGE *m)
 {
 	if (m->data != NULL) {
-		free(m->data);
+		free(m->data); // On libère le champ data
 		m->data = NULL;
 	}
 	if (m->pixel != NULL) {
-		free(m->pixel);
+		free(m->pixel); // On libère le champ pixel
 		m->pixel = NULL;
 	}
 }
 
-IMAGE malloc_image(int Nblig, int Nbcol)
+/*FONCTION : malloc_image
+	Fichier : (déclaration) annexe.h, (définition) annexe.c
+	Prototype : IMAGERGB malloc_image(int Nblig, int Nbcol)
+	Paramètre(s) d'entrée :
+		- unsigend int Nblig (nombre de lignes de l'image)
+		- unsigned int Nbcol (nombre de colonnes de l'image)
+	Paramètre de retour :
+		- IMAGE (image couleur allouée dynamiquement)
+	Description : Permet l'allocation dynamique (malloc) de matrices destinés a des images niveau de gris*/
+IMAGE malloc_image(unsigned int Nblig, unsigned int Nbcol)
 {
 	IMAGE mat = {0,0,NULL,NULL};
 	int i;
 
-	mat.Nblig = Nblig;
-	mat.Nbcol = Nbcol;
-	mat.data = (unsigned char*)malloc(Nblig*Nbcol*sizeof(unsigned char));
+	mat.Nblig = Nblig; // On renseigne le champ nombre de lignes
+	mat.Nbcol = Nbcol; // On renseigne le champ nombre de colonnes
+	// On alloue dynamiquement le champ data en fonction du nombre de lignes et du nombres de colonnes
+	mat.data = (unsigned char*)malloc(Nblig*Nbcol*sizeof(unsigned char)); 
 	if (mat.data == NULL)
 		return(mat);
+	// On alloue dynamiquement le champ pixel en fonction du nombre de lignes et du nombres de colonnes
 	mat.pixel = (unsigned char**)malloc(Nblig*sizeof(unsigned char*));
 	if (mat.pixel == NULL) {
 		free(mat.data);
@@ -570,27 +713,64 @@ IMAGE malloc_image(int Nblig, int Nbcol)
 	return(mat);
 }
 
-int detection_ppm_pgm(const char *in)
+/*FONCTION : detection_ppm_pgm
+	Fichier : (déclaration) annexe.h, (définition) annexe.c
+	Prototype : int detection_ppm_pgm(const char *in)
+	Paramètre(s) d'entrée :
+		- const char *in (chaine de caractères, nom du fichier à analyser)
+	Paramètre de retour :
+		- unsigned int (valeur retournée par la fonction dépend du type d'image (pgm, ppm ou erreur))
+	Description : Permet de detecter le type d'image entré par l'utilisateur et si ce type est pris en
+	charge par l'ordinateur*/
+unsigned int detection_ppm_pgm(const char *in)
 {
-	int i = 0;
-	
-	//for(i=0; in[i] != "."; i++)
+	unsigned int i = 0;
 
-	while (in[i] != '.')
+	while (in[i] != '.') // On parcours le nom du fichier jusqu'au point d'extension
 	{
-		i++;
+		i++; // On incrémente i jusqu'au point d'extension
 	}
 	
-	if(in[i+2] == 'p')
+	if (in[i + 1] == 'p') // Detection du premier "p" de "p"pm ou "p"gm
 	{
-		return 1;
+		if (in[i + 2] == 'p') // Detection du second "p" de p"p"m
+		{
+			return 1; // Cas où le fichier est un ppm
+		}
+		else if (in[i + 2] == 'g') // Detection du second "p" de p"g"m
+		{
+			return 2; // Cas où le fichier est un pgm
+		}
+		else
+		{
+			return 3; // Cas d'erreur
+		}
 	}
-	else if(in[i+2] == 'g')
-	{
-		return 2;
-	}
+
 	else
 	{
-		return 3;
+		return 3; // Cas d'erreur
 	}
+}
+
+/*FONCTION : detection_fichier
+	Fichier : (déclaration) annexe.h, (définition) annexe.c
+	Prototype : int detection_fichier(const char *in)
+	Paramètre(s) d'entrée :
+		- const char *in (chaine de caractères, nom du fichier à analyser)
+	Paramètre de retour :
+		- int (valeur retournée par la fonction dépend de l'existance du fichier)
+	Description : Permet de detecter que le fichier entré par l'utilisateur existe*/
+int detection_fichier(const char *in)
+{
+	FILE *F = NULL;
+
+	if ((F = fopen(in, "r")) == NULL) // Test d'ouverture du flux
+	{
+		printf("Erreur fichier inexistant !");
+		return -1; // Cas erreur -> retour -1
+	}
+
+	return 0; // Cas correct -> retour 0
+
 }

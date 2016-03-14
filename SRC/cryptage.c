@@ -5,6 +5,7 @@
 
 #include "cryptage.h"
 #include "annexe.h"
+#include "menu.h"
 
 
 int cryptage_cesar(const char *str)
@@ -61,6 +62,80 @@ int cryptage_cesar(const char *str)
 		return -1;
 		break;
 	}
+}
+
+int cryptage_clef(const char *str)
+{
+	TABLEAU txt_clef = { 0, NULL };
+	TABLEAU clef = { 0, NULL };
+
+	char* tmp;
+	int choix = 0;
+
+	choix = menu_clef();
+
+	switch (choix)
+	{
+	case 1:
+
+		system("cls");
+
+		txt_clef = recup_fichier(str);
+
+		int a = 0;
+		int b = 1;
+		
+		system("notepad.exe cle");
+		printf("Appuyer sur ENTREE pour lancer le cryptage apres avoir enregistre et ferme le fichier\n");
+		system("pause");
+		clef = recup_fichier("cle.txt");
+		system("del cle.txt");
+
+		for (int i = 0; i < clef.taille; ++i)
+		{
+			a = a + clef.data[i];
+		}
+
+		for (int i = 0; i < clef.taille; ++i)
+		{
+			b = b*clef.data[i];
+		}
+
+		for (int i = 0; i < txt_clef.taille; ++i)
+		{
+			if ((i / 2) != 0)
+			{
+				txt_clef.data[i] = txt_clef.data[i] + a;
+			}
+		}
+		for (int i = 0; i < txt_clef.taille; ++i)
+		{
+			if ((i / 2) == 0)
+			{
+				txt_clef.data[i] = txt_clef.data[i] + b;
+			}
+		}
+		for (int i = 0; i < (txt_clef.taille / 2); i++)
+		{
+			tmp = txt_clef.data[i];
+			txt_clef.data[i] = txt_clef.data[txt_clef.taille - (i + 1)];
+			txt_clef.data[txt_clef.taille - (i + 1)] = tmp;
+		}
+
+		sauv_fichier("fichier_crypt_clef.txt", txt_clef);
+
+		printf("Succes : le cryptage est termine.\nVotre fichier decrypte est 'fichier_crypt_clef.txt'\nVotre cle est 'cle.txt' penser a supprmier le fichier pour ne laisser aucune trace.\n");
+
+		system("pause");
+		return 0;
+		break;
+
+	case 2:
+		return 0;
+		break;
+	}
+
+	return 0;
 }
 
 int cryptage_image_ppm(const char *str, const char *fichier)
