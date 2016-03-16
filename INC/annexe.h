@@ -116,6 +116,15 @@ TABLEAU_int calloc_tableau_int(unsigned int n);
 	Description : Libération de l'espace mémoire pour le type TABLEAU*/
 void free_tableau(TABLEAU *pt);
 
+/*FONCTION : free_tableau_int
+	Fichier : (déclaration) annexe.h, (définition) annexe.c
+	Prototype : void free_tableau_int(TABLEAU_int *pt)
+	Paramètre(s) d'entrée :
+		- TABLEAU *pt (adresse de la variable de type TABLEAU_int)
+	Paramètre de retour : void
+	Description : Libération de l'espace mémoire pour le type TABLEAU_int*/
+void free_tableau_int(TABLEAU_int *pt);
+
 /*FONCTION : affichage_tableau
 	Fichier : (déclaration) annexe.h, (définition) annexe.c
 	Prototype : void affichage_tableau(char tab[], int n)
