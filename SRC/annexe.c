@@ -71,6 +71,23 @@ void free_tableau(TABLEAU *pt)
 	pt->taille = 0; // On met le champ taille à 0
 }
 
+/*FONCTION : free_tableau_int
+	Fichier : (déclaration) annexe.h, (définition) annexe.c
+	Prototype : void free_tableau_int(TABLEAU_int *pt)
+	Paramètre(s) d'entrée :
+		- TABLEAU *pt (adresse de la variable de type TABLEAU_int)
+	Paramètre de retour : void
+	Description : Libération de l'espace mémoire pour le type TABLEAU_int*/
+void free_tableau_int(TABLEAU_int *pt)
+{
+	if (pt->data != NULL)
+	{
+		free(pt->data); // On libère le champ data
+	}
+	pt->data = NULL;
+	pt->taille = 0; // On met le champ taille à 0
+}
+
 /*FONCTION : recup_fichier
 	Fichier : (déclaration) annexe.h, (définition) annexe.c
 	Prototype : TABLEAU recup_fichier(const char *str)
@@ -767,7 +784,7 @@ int detection_fichier(const char *in)
 
 	if ((F = fopen(in, "r")) == NULL) // Test d'ouverture du flux
 	{
-		printf("Erreur fichier inexistant !");
+		printf("Erreur fichier inexistant !\n");
 		return -1; // Cas erreur -> retour -1
 	}
 
