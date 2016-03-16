@@ -71,7 +71,7 @@ int main(void)
 			retour_menu = menu_cryptage();// Menu lié aux algorithmes de cryptage
 			if (retour_menu != 0) // Controle de la bonne execution des algorithmes de cryptage
 			{
-				printf("Erreur dans l'execution du programme");
+				printf("Erreur dans l'execution du programme\n");
 			}
 			choix = 0; // Reset du choix entré
 			break;
@@ -80,7 +80,7 @@ int main(void)
 			retour_menu = menu_decryptage(); // Menu lié aux algorithmes de decryptage
 			if (retour_menu != 0)
 			{
-				printf("Erreur dans l'execution du programme"); // Controle de la bonne execution des algorithmes de decryptage
+				printf("Erreur dans l'execution du programme\n"); // Controle de la bonne execution des algorithmes de decryptage
 			}
 			choix = 0; // Reset du choix entré
 			break;
@@ -89,7 +89,7 @@ int main(void)
 			retour_menu = menu_annexe(); // Menu lié aux fonctions annexes
 			if (retour_menu != 0)
 			{
-				printf("Erreur dans l'execution du programme"); // Controle de la bonne execution
+				printf("Erreur dans l'execution du programme\n"); // Controle de la bonne execution
 			}
 			choix = 0; // Reset du choix entré
 			break;
